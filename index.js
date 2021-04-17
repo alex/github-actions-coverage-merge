@@ -19,11 +19,10 @@ async function mergeCoverage() {
 	const artifactClient = artifact.create();
 	const downloadResponse = await artifactClient.downloadAllArtifacts("coverage/");
 	let allPaths = [];
-	for (response in downloadResponse) {
-		console.log(`response=${response}, response.downloadPath=${response.downloadPath}, response.artifactName=${response.artifactName}`);
+	for (const response of downloadResponse) {
 		allPaths.push(response.downloadPath);
 	}
-	console.log(`Downloaded coverage: ${allPaths}`);
+	console.log(`Downloaded coverage: ${allPaths.join(", ")}`);
 
 	await exec.exec("sudo apt install cobertura");
 	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(allPaths));
