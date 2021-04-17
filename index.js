@@ -17,10 +17,15 @@ async function uploadCoverage() {
 
 async function mergeCoverage() {
 	const artifactClient = artifact.create();
-	await artifactClient.downloadAllArtifacts("coverage/");
+	const downloadResponse = await artifactClient.downloadAllArtifacts("coverage/");
+	let allPaths = [];
+	for (response in downloadResponse) {
+		allPaths.push(response.downloadPath);
+	}
+	console.log(`Downloaded coverage: ${allPaths}`);
 
 	await exec.exec("sudo apt install cobertura");
-	await exec.exec('cobertura-merge --datafile final-coverage.xml $(for p in $(find coverage/ -iname "*.xml"); do printf "%s " "$p"; done)');
+	await exec.exec('cobertura-merge' ['--datafile', 'final-coverage.xml'].concat(allPaths));
 	await exec.exec('cobertura-report --datafile final-coverage.xml --destination html-coverage/');
 	await artifactClient.uploadArtifact('final-coverage', ['html-coverage/'], '.');
 
