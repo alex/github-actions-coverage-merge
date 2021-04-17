@@ -19,7 +19,7 @@ async function uploadCoverage() {
 async function mergeCoverage() {
 	const artifactClient = artifact.create();
 	await artifactClient.downloadAllArtifacts("coverage/");
-	const globber = glob.create(["coverage/**/*.xml"])
+	const globber = glob.create("coverage/**/*.xml");
 
 	await exec.exec("sudo apt install cobertura");
 	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(globber.glob()));
