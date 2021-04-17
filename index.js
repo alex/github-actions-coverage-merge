@@ -31,13 +31,17 @@ async function mergeCoverage() {
 
 async function main() {
 	const mode = core.getInput('mode');
-	if (mode === 'upload') {
-		await uploadCoverage();
-	} else if (mode === 'merge') {
-		await mergeCoverage();
-	} else {
-		core.setFailed(`Unexpected mode: ${mode}`);
+	try {
+		if (mode === 'upload') {
+			await uploadCoverage();
+		} else if (mode === 'merge') {
+			await mergeCoverage();
+		} else {
+			core.setFailed(`Unexpected mode: ${mode}`);
+		}
+	} catch (error) {
+		core.setFailed(error.message);
 	}
 }
 
-main()
+main();
