@@ -1,6 +1,7 @@
 const artifact = require('@actions/artifact');
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const glob = require('@actions/glob');
 
 async function uploadCoverage() {
 	const name = core.getInput('name');
@@ -17,15 +18,11 @@ async function uploadCoverage() {
 
 async function mergeCoverage() {
 	const artifactClient = artifact.create();
-	const downloadResponse = await artifactClient.downloadAllArtifacts("coverage/");
-	let allPaths = [];
-	for (const response of downloadResponse) {
-		allPaths.push(response.downloadPath);
-	}
-	console.log(`Downloaded coverage: ${allPaths.join(", ")}`);
+	await artifactClient.downloadAllArtifacts("coverage/");
+	const globber = glob.create(["coverage/**/*.xml"])
 
 	await exec.exec("sudo apt install cobertura");
-	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(allPaths));
+	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(globber.glob()));
 	await exec.exec('cobertura-report --datafile final-coverage.xml --destination html-coverage/');
 	await artifactClient.uploadArtifact('final-coverage', ['html-coverage/'], '.');
 
