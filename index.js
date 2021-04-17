@@ -20,6 +20,7 @@ async function mergeCoverage() {
 	const downloadResponse = await artifactClient.downloadAllArtifacts("coverage/");
 	let allPaths = [];
 	for (response in downloadResponse) {
+		console.log(`response=${response}, response.downloadPath=${response.downloadPath}, response.artifactName=${response.artifactName}`);
 		allPaths.push(response.downloadPath);
 	}
 	console.log(`Downloaded coverage: ${allPaths}`);
