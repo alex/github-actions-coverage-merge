@@ -1,0 +1,13 @@
+name: "Github Actions Coverage Merge"
+description: "Merge coverage results across Github Actions jobs"
+inputs:
+  mode:
+    description: "Either 'upload' or 'merge'"
+    required: true
+  name:
+    description: "Name of the task (when used in 'upload' mode). Must be unique per workflow."
+    default: ""
+
+runs:
+  using: "node12"
+  main: "index.js"
