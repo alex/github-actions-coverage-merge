@@ -25,7 +25,7 @@ async function mergeCoverage() {
 	console.log(`Downloaded coverage: ${allPaths}`);
 
 	await exec.exec("sudo apt install cobertura");
-	await exec.exec('cobertura-merge' ['--datafile', 'final-coverage.xml'].concat(allPaths));
+	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(allPaths));
 	await exec.exec('cobertura-report --datafile final-coverage.xml --destination html-coverage/');
 	await artifactClient.uploadArtifact('final-coverage', ['html-coverage/'], '.');
 
