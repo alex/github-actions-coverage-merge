@@ -19,14 +19,19 @@ async function uploadCoverage() {
 async function mergeCoverage() {
 	const artifactClient = artifact.create();
 	await artifactClient.downloadAllArtifacts("coverage/");
-	const globber = await glob.create("coverage/**/*.xml");
 
-	await exec.exec("sudo apt install cobertura");
-	await exec.exec('cobertura-merge', ['--datafile', 'final-coverage.xml'].concat(await globber.glob()));
-	await exec.exec('cobertura-report --datafile final-coverage.xml --destination html-coverage/');
-	await artifactClient.uploadArtifact('final-coverage', ['html-coverage/'], '.');
+	await exec.exec(
+		'dotnet',
+		['tool', 'install', 'dotnet-reportgenerator-globaltool', '--tool-path', 'reportgeneratortool', '--ignore-failed-sources']
+	);
+	await exec.exec(
+		'reportgeneratortool/reportgenerator',
+		["-reports:coverage/**/*.xml", "-targetdir:final-coverage/", "-reporttypes:HtmlInline,TextSummary"]
+	);
 
-	await exec.exec('cobertura-check -datafile final-coverage.xml --line=100 --branch=100');
+	await artifactClient.uploadArtifact('final-coverage', ['final-coverage/'], '.');
+
+	// TODO: fail the test at less than 100% coverage
 }
 
 async function main() {
