@@ -18,7 +18,7 @@ async function uploadCoverage() {
 	await artifactClient.uploadArtifact(`coverage-${name}`, ["coverage.xml"].concat(await globber.glob()), ".");
 }
 
-function parseJSONWithBom(data) {
+function parseJSONWithBOM(data) {
 	// Remove UTF-16 BOMs before passing to JSON.
 	if (data.charCodeAt(0) == 0xFEFF) {
 		data = data.slice(1);
