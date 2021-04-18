@@ -26,7 +26,7 @@ async function mergeCoverage() {
 	);
 	await exec.exec(
 		'reportgeneratortool/reportgenerator',
-		["-reports:coverage/**/*.xml", "-targetdir:final-coverage/", "-reporttypes:HtmlInline;TextSummary"]
+		["-reports:coverage/**/*.xml", "-targetdir:final-coverage/", "-reporttypes:HtmlInline;JsonSummary"]
 	);
 
 	const globber = await glob.create("final-coverage/*");
