@@ -29,7 +29,8 @@ async function mergeCoverage() {
 		["-reports:coverage/**/*.xml", "-targetdir:final-coverage/", "-reporttypes:HtmlInline;TextSummary"]
 	);
 
-	await artifactClient.uploadArtifact('final-coverage', ['final-coverage/'], '.');
+	const globber = await glob.create("final-coverage/*");
+	await artifactClient.uploadArtifact('final-coverage', await globber.glob(), '.');
 
 	// TODO: fail the test at less than 100% coverage
 }
