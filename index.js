@@ -10,7 +10,6 @@ async function uploadCoverage() {
 		return;
 	}
 
-	await exec.exec('coverage combine');
 	await exec.exec('coverage xml');
 
 	const globber = await glob.create('*.lcov');
