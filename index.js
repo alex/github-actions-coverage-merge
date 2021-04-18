@@ -1,3 +1,4 @@
+const fs = require('fs');
 const artifact = require('@actions/artifact');
 const core = require('@actions/core');
 const exec = require('@actions/exec');
@@ -33,7 +34,10 @@ async function mergeCoverage() {
 	const globber = await glob.create("final-coverage/*");
 	await artifactClient.uploadArtifact('final-coverage', await globber.glob(), '.');
 
-	// TODO: fail the test at less than 100% coverage
+	let data = JSON.parse(fs.readFileSync('final-coverage/Summary.json'))["summary"];
+	if (data["linecoverage"] < 100 || data["branchcoverage"] < 100) {
+		core.setFailed(`Project had less than 100% coverage, only had: ${data["linecoverage"]}% line coverage and ${data["branchcoverage"]}% branch coverage.`);
+	}
 }
 
 async function main() {
