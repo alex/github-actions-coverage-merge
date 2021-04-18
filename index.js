@@ -10,10 +10,12 @@ async function uploadCoverage() {
 		return;
 	}
 
+	await exec.exec('coverage combine');
 	await exec.exec('coverage xml');
 
+	const globber = await glob.create('*.lcov');
 	const artifactClient = artifact.create();
-	await artifactClient.uploadArtifact(`coverage-${name}`, ["coverage.xml"], ".");
+	await artifactClient.uploadArtifact(`coverage-${name}`, ["coverage.xml"].concat(await globber.glob()), ".");
 }
 
 async function mergeCoverage() {
