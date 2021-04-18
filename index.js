@@ -19,6 +19,7 @@ async function uploadCoverage() {
 }
 
 function parseJSONWithBOM(data) {
+	data = data.toString();
 	// Remove UTF-16 BOMs before passing to JSON.
 	if (data.charCodeAt(0) == 0xFEFF) {
 		data = data.slice(1);
