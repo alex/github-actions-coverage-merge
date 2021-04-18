@@ -18,6 +18,14 @@ async function uploadCoverage() {
 	await artifactClient.uploadArtifact(`coverage-${name}`, ["coverage.xml"].concat(await globber.glob()), ".");
 }
 
+function parseJSONWithBom(data) {
+	// Remove UTF-16 BOMs before passing to JSON.
+	if (data.charCodeAt(0) == 0xFEFF) {
+		data = data.slice(1);
+	}
+	return JSON.parse(data);
+}
+
 async function mergeCoverage() {
 	const artifactClient = artifact.create();
 	await artifactClient.downloadAllArtifacts("coverage/");
@@ -34,7 +42,7 @@ async function mergeCoverage() {
 	const globber = await glob.create("final-coverage/*");
 	await artifactClient.uploadArtifact('final-coverage', await globber.glob(), '.');
 
-	let data = JSON.parse(fs.readFileSync('final-coverage/Summary.json'))["summary"];
+	let data = parseJSONWithBOM(fs.readFileSync('final-coverage/Summary.json'))["summary"];
 	if (data["linecoverage"] < 100 || data["branchcoverage"] < 100) {
 		core.setFailed(`Project had less than 100% coverage, only had: ${data["linecoverage"]}% line coverage and ${data["branchcoverage"]}% branch coverage.`);
 	}
